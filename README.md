@@ -17,6 +17,11 @@ The text is not saved.
 
 ```
 
+  # /hello (Accept: text/plain)
+  # /hello.txt
+  # /hello?format=txt
+
+
 It returns a string with spelling error highlighted.
 
 
