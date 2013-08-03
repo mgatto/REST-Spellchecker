@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
 use Modern::Perl '2011';
+use Lingua::Identify qw(:language_identification);
 use utf8;
 
 # Documentation browser under "/perldoc"
@@ -32,9 +33,10 @@ post 'spellcheck' => sub {
     ## Deal with charsets...
 
 
-
-    ## Validate that its English
-
+    ## Determine language
+    # we won't rely on HTTP headers for locales: someone in a Spanish locale
+    # may easily wish to spellcheck an English text, so ceck the text directly.
+    $lang = langof($text);
 
 
     ## Run the spellchecker
