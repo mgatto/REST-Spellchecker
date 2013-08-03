@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
+use Modern::Perl '2011';
 
 # Documentation browser under "/perldoc"
 plugin 'PODRenderer';
