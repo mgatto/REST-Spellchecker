@@ -20,7 +20,7 @@ For example:
 curl -v -H "Accept-Language: fr;q=1.0, en-us;q=0.8"  127.0.0.1:3000//api/v1/spellcheck/rsearch
 ```
 
-### Returned Content
+## Returned Content
 
 The return format is JSON.
 
@@ -90,7 +90,7 @@ Deployment
 ### Prerequisites
 
 You **must** have installed hunspell on the system in which this appliction
-runs. **and** dictionaries for each supported languge.
+runs **and dictionaries** for each supported languge.
 
 #### Tested
 
@@ -100,8 +100,12 @@ runs. **and** dictionaries for each supported languge.
     ```
     sudo apt-get install hunspell libhunspell-dev hunspell-en-us hunspell-fr
     ```
-    Apparently, libhunspell is placed in `/usr/lib/i386-linux-gnu/` but Text::Hunspell
-    really wants it to be in `/usr/lib/`, so symlink it:
+    There are virtual packages which group together multiple locales for each language.
+    You probably want those to save some typing, but the above is laser-specific.
+
+    Libhunspell is installed into `/usr/lib/i386-linux-gnu/` but Text::Hunspell
+    only looks for it in `/usr/lib/` (at least when we install directly from CPAN),
+    so symlink it:
     ```
     sudo /bin/ln -s /usr/lib/i386-linux-gnu/libhunspell.so /usr/lib/libhunspell.so
     ```
@@ -117,36 +121,40 @@ runs. **and** dictionaries for each supported languge.
 * Windows: (difficult, unless one is prepared to compile hunspell exactly the same way as one's Perl installation.)
 * OSX: (already installed by default on 10.6 and later)
 
-### Source Code
+### Get Source Code
 
 ```
 git clone https://github.com/mgatto/REST-Spellchecker.git
 cd REST-Spellchecker
 ```
 
-Now, install the dependencies.
+Next, install the dependencies.
 
-### Dependencies
+### Install Dependencies
 
-cpanm will automatically use the `cpanfile` in the source code to install dependencies.
+cpanm will automatically use the [`cpanfile`](https://github.com/mgatto/REST-Spellchecker/blob/master/cpanfile) in the source code to install dependencies.
 
-The modules are set for their latest releases, simply on principle and to match
+The modules are pinned to their latest releases, simply on principle and to match
 my testing environment. Earlier releases of these distributions may well work.
 Feel free to modify the cpanfile; it may break however, and if it does, please
 file an issue on this GitHub project.
 
 You may wish to install the required modules into your local::lib, and possibly
 a separate install using Perlbrew.
+
+In any case, go ahead and install the dependencies:
 ```
 cpanm --installdeps .
 ```
+After this, you are ready to start the (test) server!
 
 ### Start the Server
 
-For demonstration purposes, we use the built-in Morbo HTTP server.
-
+For demonstration purposes, we use the Morbo HTTP server, built-in to Mojolicious.
 Make sure you're in the same directory as `spellchecker.pl` and then run:
-`./spellchecker.pl daemon`
+```
+./spellchecker.pl daemon
+```
 
 Why Not...?
 -----------
