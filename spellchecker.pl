@@ -24,18 +24,23 @@ get '/' => sub {
 =head1 POST Spellcheck
 POST a block of plain text to be spellchecked.
 =cut
-any '/api/v1/word/:word' => sub {
+get '/api/v1/spellcheck/:word' => sub {
     # an instance of Mojolicious::Lite (or, Mojolicious::Controller?)
     my $self = shift;
     my $dict_path = '/usr/share/hunspell';
-    my $lang;
+    my $lang = "en_US"; # default
 
     # format should be only plain text, not JSON nor YAML nor even HTML yet.
     my $word = $self->param('word');
 
-    #$self->app->log->debug('Rendering "Hello World!" message.');
-
-    ## Deal with charsets...
+    # some dictionary files have locale suffixes; avoid "empty dic file"
+    my %lang_2_locales = (
+        # Yeah, I'm making alot of assumptions here
+        fr => 'fr',
+        en => 'en_US', # ah, sorry Brits; should have passed a whole Accpet-Language + locale in your HTTP header!
+        de => 'de_DE',
+    );
+    # @TODO: Deal with character sets for non-Latin scripts.
 
 
     ## Determine language
@@ -58,17 +63,10 @@ any '/api/v1/word/:word' => sub {
             # this is nice, but it can't distinguish country locales...
     }
 
-    # some dictionary files have locale suffixes; avoid "empty dic file"
-    my %lang_2_locales = (
-        # Yeah, I'm making alot of assumptions here
-        fr => 'fr',
-        en => 'en_US', # ah, sorry Brits; should have passed a whole Accpet-Language + locale in your HTTP header!
-        de => 'de_DE',
-    );
-
     return $self->render(json => {error => "Dictionary does not exist for '$lang'."}, status => 500)
         unless exists $lang_2_locales{$lang} && defined $lang_2_locales{$lang};
 
+    #$self->app->log->debug("Language in use: '$lang_2_locales{$lang}'");
     my $speller = Text::Hunspell->new(
         sprintf("%s/%s.aff", $dict_path, $lang_2_locales{$lang}), # Hunspell affix file
         sprintf("%s/%s.dic", $dict_path, $lang_2_locales{$lang})  # Hunspell dictionary file

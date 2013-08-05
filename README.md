@@ -4,37 +4,19 @@ REST Spellchecker
 Usage
 -----
 
-Issue an HTTP POST to the endpoint "/v1/".
+Issue a GET HTTP request to the endpoint "/api/v1/spellcheck/YOUR-WORD". It
+would be nice to include an Accept-Language header which matches the language
+of the submitted word. If you do not, the service falls back to linguistic
+analysis to determine the proper language dictionary to load.
 
-The body content should be the text to spellcheck. In this simple example, it
-mostly expects only plain text.
+However, determining the language of a single word is less than reliable
+compared to blocks of text, so please send the header. Multiple language
+preferences should be qualified.
 
-Only English text is supported at this time.
-
-The text is not saved.
-
+For example:
 ```
-
+curl -v -H "Accept-Language: fr;q=1.0, en-us;q=0.8"  127.0.0.1:3000//api/v1/spellcheck/rsearch
 ```
-
-  # /hello (Accept: text/plain)
-  # /hello.txt
-  # /hello?format=txt
-
-
-It returns a string with spelling error highlighted.
-
-
-
-### About HTTP Verbs
-
-Strictly speaking, `POST` is meant for new resources (usually, canonically).
-However, this application does not save resources to a URL on the server.
-Thus, it technically does not count. However, `GET` would be inadequate here
-and `PUT` would suffer from the same semantic issues which `POST` suffers.
-
-No matter: `POST` makes this application more robust, if only because this API
-could be used directly from a browser even without client-side Javascript.
 
 How it Works
 ------------
@@ -47,37 +29,41 @@ Mojo applications as it grows.
 See the accompanying `cpanfile` in the source code for the latest dependencies
 and their versions.
 
-Since this company operates worldwide and supports multiple language, so too,
-must this spellchecker support multiple languages.  Lingua::Identify, er,
-identifies the language of the text. We can't really rely on the locale reported
-by the client, if even it does in a RESTful environment. In a globallized world,
+This company operates worldwide and supports multiple language. So too,
+must this spellchecker support multiple languages.  Locale::Util parses the
+HTTP Accept-Language header. As a fallback, Lingua::Identify identifies the
+language of the text. In a globallized world,
 people might easily need to spellcheck in a language which does not match their
 reported locale.
 
-Text::Spellchecker performs the actual spellchecking, which in turn, depends on
-Text::Hunspell, or Text::Aspell. Hunspell is recommended, so we use that.
-Hunspell needs dictionary files, so we'll need a number of them to support all
-the languages which the company supports. See below for installing the necessary
-dictionaries.
-
+Text::Hunspell performs the actual spellchecking. Hunspell gets the most recommendations
+over Aspell and is used in many OSes, browsers and notably, OpenOffice. Hunspell
+is just a library, so it needs dictionary files, one for each language. Sometimes
+each language has a separate file for each locale. For example, there are
+separate dictionaries in German for Germany and another for Switzerland.
+See below for installing the necessary dictionaries.
 
 Deployment
 ----------
 
 ### Prerequisites
 
-I recommend using local::lib, and even Perlbrew.
-
 You **must** have installed hunspell on the system in which this appliction
-runs. **and** dictionaries for each supported anguge.
+runs. **and** dictionaries for each supported languge.
 
 #### Tested
 
 * Ubuntu:
-    `sudo apt-get install hunspell libhunspell-dev hunspell-en-us hunspell-fr`, etc.
+    Tested under Perl 5.14.2 on Ubuntu 12.04 LTS, in VirtualBox.
+
+    ```
+    sudo apt-get install hunspell libhunspell-dev hunspell-en-us hunspell-fr
+    ```
     Apparently, libhunspell is placed in `/usr/lib/i386-linux-gnu/` but Text::Hunspell
     really wants it to be in `/usr/lib/`, so symlink it:
-    `sudo /bin/ln -s /usr/lib/i386-linux-gnu/libhunspell.so /usr/lib/libhunspell.so`
+    ```
+    sudo /bin/ln -s /usr/lib/i386-linux-gnu/libhunspell.so /usr/lib/libhunspell.so
+    ```
 
 #### Untested
 
@@ -89,7 +75,6 @@ runs. **and** dictionaries for each supported anguge.
     `pkg_add hunspell mozilla-dicts-us mozilla-dicts-fr`, etc.
 * Windows: (difficult, unless one is prepared to compile hunspell exactly the same way as one's Perl installation.)
 * OSX: (already installed by default on 10.6 and later)
-
 
 ### Source Code
 
@@ -103,9 +88,11 @@ Now, install the dependencies.
 ### Dependencies
 
 cpanm will automatically use the `cpanfile` in the source code to install dependencies.
-
-`cpanm --installdeps .`
-
+You may wish to install the required modules into your local::lib, and possibly
+a separate install using Perlbrew.
+```
+cpanm --installdeps .
+```
 
 ### Start the Server
 
@@ -114,27 +101,24 @@ For demonstration purposes, we use the built-in Morbo HTTP server.
 Make sure you're in the same directory as `spellchecker.pl` and then run:
 `./spellchecker.pl daemon`
 
-
-
-Testing
--------
-
-Tested under Perl 5.14.2 on Ubuntu 12.04.
-
-
 Why Not...?
 -----------
 
 Dancer:
-
+    A good drop in for Mojolicious, especially Dancer2. But my subjective opinions
+    prefers Mojolicious::Lite.
 
 Raw Plack:
-
+    Fast, but too much wheel-reinventing.
 
 Mod_Perl:
+    If one must deploy in that environment, then a PSGI adapter would probably
+    be better than using a slew of Apache:: or Apache2:: modules.
 
+Possible ToDos
+--------------
+The service could collect statistics on misspelled words and chosen replacements
+to prioritize common replacements.
 
-Interesting Future Directions
------------------------------
-The text could be saved in a psuedo- or real VCS, and used to make diffs of
-resubmitted texts. Might be useful for linguists tracking spelling error rates.
+Hunspell copes poorly with some proper nouns. Could compare to dictionaries of
+names for example, in the specfied locale.
