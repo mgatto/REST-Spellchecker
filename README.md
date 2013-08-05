@@ -9,9 +9,9 @@ Usage
 Issue a HTTP GET request to the endpoint `/api/v1/spellcheck/YOUR-WORD`. It
 would be nice to include an Accept-Language header which matches the language
 of the submitted word. If you do not, the service falls back to linguistic
-analysis to determine the proper language dictionary to load.
+analysis to determine which language dictionary to load.
 
-However, determining the language of a single word is less than reliable
+However, determining the language of a single word is less reliable
 compared to blocks of text, so please send the header. Multiple language
 preferences should be qualified.
 
@@ -19,6 +19,8 @@ For example:
 ```
 curl -v -H "Accept-Language: fr;q=1.0, en-us;q=0.8"  127.0.0.1:3000//api/v1/spellcheck/rsearch
 ```
+
+### Returned Content
 
 The return format is JSON.
 
@@ -149,16 +151,18 @@ Make sure you're in the same directory as `spellchecker.pl` and then run:
 Why Not...?
 -----------
 
-Dancer:
-    A good drop in for Mojolicious, especially Dancer2. But my subjective opinions
-    prefers Mojolicious::Lite.
+<dl>
+    <dt>Dancer</dt>
+    <dd>A good drop in for Mojolicious, especially Dancer2. But my subjective opinions
+    prefers Mojolicious::Lite.</dd>
 
-Raw Plack:
-    Fast, but too much wheel-reinventing.
+    <dt>Raw Plack</dt>
+    <dd>Fast, but too much wheel-reinventing.</dd>
 
-Mod_Perl:
-    If one must deploy in that environment, then a PSGI adapter would probably
-    be better than using a slew of Apache:: or Apache2:: modules.
+    <dt>Mod_Perl</dt>
+    <dd>If one must deploy in that environment, then a PSGI adapter would probably
+    be better than using a slew of Apache:: or Apache2:: modules.</dd>
+</dl>
 
 Possible ToDos
 --------------
@@ -181,8 +185,8 @@ More dictionaries, including Asian language support and their varying charsets:
 * Português
 * Suomi
 * Svenska
-* Türkçe
-* Русский
+* Russian
+* Russian
 * Thai
 * Korean
 * Mandarin Chinese
