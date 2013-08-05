@@ -65,8 +65,8 @@ How it Works
 
 Mojolicious::Lite serves as the HTTP micro-framework. Mojolicious has no required
 CPAN dependencies. Some have critiqued this, but I'm fine with it since its
-fast. Also, Mojolicious::Lite applications can be easily upgraded to full
-Mojo applications as it grows.
+fast. Also, a Mojolicious::Lite application can be easily upgraded to a full
+Mojo application as it grows, for better developer happiness.
 
 See the accompanying [`cpanfile`](https://github.com/mgatto/REST-Spellchecker/blob/master/cpanfile) in the source code for the latest dependencies
 and their versions.
