@@ -18,6 +18,40 @@ For example:
 curl -v -H "Accept-Language: fr;q=1.0, en-us;q=0.8"  127.0.0.1:3000//api/v1/spellcheck/rsearch
 ```
 
+The Return format is JSON.
+
+#### Word is correct
+
+Returns just the word.
+
+HTTP Code: 200.
+```json
+{"YOUR_WORD":NULL}
+```
+
+#### Word is incorrect
+
+returns the word with a list of suggestions.
+
+HTTP Code: 404 (Not Found).
+```json
+{"YOUR_WORD":["searcher","research"]}
+```
+
+#### Error: Dictionary not found for locale
+
+HTTP Code: 500.
+```json
+{"error":"Dictionary does not exist for: ar_AE"}
+```
+
+#### Error: Speller library error
+
+HTTP Code: 500.
+```json
+{"error":"Speller failed at start-up."}
+```
+
 How it Works
 ------------
 
@@ -88,6 +122,12 @@ Now, install the dependencies.
 ### Dependencies
 
 cpanm will automatically use the `cpanfile` in the source code to install dependencies.
+
+The modules are set for their latest releases, simply on principle and to match
+my testing environment. Earlier releases of these distributions may well work.
+Feel free to modify the cpanfile; it may break however, and if it does, please
+file an issue on this GitHub project.
+
 You may wish to install the required modules into your local::lib, and possibly
 a separate install using Perlbrew.
 ```

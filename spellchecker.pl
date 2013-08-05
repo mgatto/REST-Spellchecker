@@ -21,17 +21,21 @@ get '/' => sub {
 };
 
 
-=head1 POST Spellcheck
-POST a block of plain text to be spellchecked.
+=head1 GET '/api/v1/spellcheck/WORD'
+Spellcheck a word.
+
+
 =cut
 get '/api/v1/spellcheck/:word' => sub {
-    # an instance of Mojolicious::Lite (or, Mojolicious::Controller?)
+    # an instance of Mojolicious::Controller
     my $self = shift;
+
     my $dict_path = '/usr/share/hunspell';
     my $lang = "en_US"; # default
 
     # format should be only plain text, not JSON nor YAML nor even HTML yet.
     my $word = $self->param('word');
+    return $self->render()
 
     # some dictionary files have locale suffixes; avoid "empty dic file"
     my %lang_2_locales = (
@@ -63,7 +67,7 @@ get '/api/v1/spellcheck/:word' => sub {
             # this is nice, but it can't distinguish country locales...
     }
 
-    return $self->render(json => {error => "Dictionary does not exist for '$lang'."}, status => 500)
+    return $self->render(json => {error => "Dictionary does not exist for: $lang."}, status => 500)
         unless exists $lang_2_locales{$lang} && defined $lang_2_locales{$lang};
 
     #$self->app->log->debug("Language in use: '$lang_2_locales{$lang}'");
@@ -86,7 +90,7 @@ get '/api/v1/spellcheck/:word' => sub {
         $word => ( $correct ) ? undef : [$speller->suggest($temp_word)]
     );
 
-    $self->render(json => \%spelling_result, status => ($correct) ? 200 : 404);
+    return $self->render(json => \%spelling_result, status => ($correct) ? 200 : 404);
 };
 
 
