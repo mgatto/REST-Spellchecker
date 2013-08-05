@@ -1,10 +1,9 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
-use Modern::Perl '2011';
+use Modern::Perl '2012';
 use Lingua::Identify qw(:language_identification);
 use Locale::Util qw(parse_http_accept_language);
 use Text::Hunspell;
-use Data::Dumper;
 use utf8;
 
 # Documentation browser under "/perldoc"
