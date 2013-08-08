@@ -11,6 +11,7 @@ plugin 'PODRenderer';
 
 
 =head1 GET Index
+
 This displays a help page, since we are really an API server.
 =cut
 get '/' => sub {
@@ -21,6 +22,7 @@ get '/' => sub {
 
 
 =head1 GET '/api/v1/spellcheck/WORD'
+
 Spellcheck a word.
 
 
@@ -34,7 +36,6 @@ get '/api/v1/spellcheck/:word' => sub {
 
     # format should be only plain text, not JSON nor YAML nor even HTML yet.
     my $word = $self->param('word');
-    return $self->render()
 
     # some dictionary files have locale suffixes; avoid "empty dic file"
     my %lang_2_locales = (
@@ -100,7 +101,7 @@ __DATA__
 @@ help.html.ep
 % layout 'default';
 % title 'Help';
-This application is only meant to be accessed via
+This application is only meant to be accessed a an API.
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
